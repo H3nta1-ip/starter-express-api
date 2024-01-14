@@ -1,41 +1,38 @@
 const express = require('express');
-const fetch = require('node-fetch');
+const fs = require('fs');
 const cors = require('cors');
 
 const app = express();
-app.use(express.json());
-
-// Enable CORS for all routes
 app.use(cors());
 
-// POST endpoint to receive the payload and send it to the webhook
-app.post('/api/send-webhook', async (req, res) => {
-  try {
-    const payload = req.body;
+let urls = [];
 
-    // Send the POST request to the webhook URL
-    const response = await fetch('https://discord.com/api/webhooks/1118980055041839224/ASI4Q3J_J5Xe5IpI6T9r-YmWgqCWT0IdmPoZrEzaB7MysUjwx-mm8xBiv3RDMC6V3wEP', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      console.log('Message sent successfully!');
-      res.sendStatus(200);
-    } else {
-      console.error('Failed to send message:', response.status, response.statusText);
-      res.sendStatus(500);
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    res.sendStatus(500);
+// Read the file and store the URLs in memory
+fs.readFile('path/h.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
   }
+  urls = data.split('\n').filter(url => url.trim() !== '');
 });
 
-// Start the server
+// API endpoint to get a random image URL
+app.get('/get-random-videos', (req, res) => {
+  const randomUrl = getRandomItem(urls);
+  res.json({ url: randomUrl });
+});
+
+// Helper function to get a random item from an array
+function getRandomItem(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
+
+// Start the server on the specified port
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`API server is running on port ${port}`);
