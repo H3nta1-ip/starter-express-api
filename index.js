@@ -8,7 +8,7 @@ app.use(cors());
 let urls = [];
 
 // Read the file and store the URLs in memory
-fs.readFile('path/h.txt', 'utf8', (err, data) => {
+fs.readFile('h.txt', 'utf8', (err, data) => {
   if (err) {
     console.error(err);
     process.exit(1);
